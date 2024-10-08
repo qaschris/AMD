@@ -1,9 +1,9 @@
 const axios = require('axios');
 
 exports.handler = async function ({ event: body, constants, triggers }, context, callback) {
-    const token = 'YOUR_API_TOKEN'; // Replace with your qTest API token
-    const qtestDomainName = 'yourdomain.qtestnet.com'; // Replace with your qTest domain
-    const apiUrl = `https://${qtestDomainName}/api/v3`; // qTest API domain
+    const token = constants.QTEST_TOKEN; // Replace with your qTest API token
+    const qtestDomainName = constants.ManagerURL; // Replace with your qTest domain
+    const apiUrl = `https://${qtestDomainName}/api/v3`; // Replace with your qTest API domain
 
     try {
         // Extract projectId and testRunId from the webhook payload
@@ -29,19 +29,28 @@ exports.handler = async function ({ event: body, constants, triggers }, context,
         const parentId = testRunData.parentId;
         const parentType = testRunData.parentType;
         const testRunName = testRunData.name;
-        const testLogStatus = testRunData.latest_test_log.status;
+
+        // Search for the "Status" field in the properties array to get the field_value_name
+        let testLogStatus = '';
+        const statusProperty = testRunData.properties.find(prop => prop.field_name === 'Status');
+        if (statusProperty) {
+            testLogStatus = statusProperty.field_value_name;
+        } else {
+            console.error('[ERROR]: Status field not found in test run properties.');
+            return;
+        }
 
         // Determine the color for the test log status based on the result
         let statusColor;
-        switch (testLogStatus.toLowerCase()) {
-            case 'passed':
+        switch (testLogStatus) {
+            case 'Passed':
                 statusColor = 'Good'; // Green
                 break;
-            case 'failed':
+            case 'Failed':
                 statusColor = 'Attention'; // Red
                 break;
-            case 'blocked':
-            case 'skipped':
+            case 'Blocked':
+            case 'Skipped':
                 statusColor = 'Warning'; // Yellow
                 break;
             default:
