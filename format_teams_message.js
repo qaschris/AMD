@@ -65,22 +65,22 @@ exports.handler = async function ({ event: body, constants, triggers }, context,
         });
         const projectName = projectResponse.data.name;
 
-        // 3. If the parentType is a "test-suite", GET test suite details
-        let testSuiteName = '';
-        if (parentType === 'test-suite') {
-            const testSuiteResponse = await axios.get(`${apiUrl}/projects/${projectId}/test-suites/${parentId}`, {
+        // 3. If the parentType is a "test-cycle", GET test cycles details
+        let testCycleName = '';
+        if (parentType === 'test-cycle') {
+            const testCycleResponse = await axios.get(`${apiUrl}/projects/${projectId}/test-cycles/${parentId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-            testSuiteName = testSuiteResponse.data.name;
+            testCycleName = testCycleResponse.data.name;
         } else {
-            console.error('[ERROR]: Parent is not a test-suite.');
+            console.error('[ERROR]: Parent is not a test-cycle.');
             return;
         }
 
         // 4. Construct the message
-        const message = `Tosca Results Submitted: ${projectName} - ${testSuiteName} - ${testRunName} - ${testLogStatus}`;
+        const message = `Tosca Results Submitted: ${projectName} - ${testCycleName} - ${testRunName} - ${testLogStatus}`;
 
         // 5. Create a URL for the test run in qTest
         const testRunUrl = `https://${qtestDomainName}/p/${projectId}/portal/project#id=${testRunId}&object=3&tab=testexecution`;
@@ -110,8 +110,8 @@ exports.handler = async function ({ event: body, constants, triggers }, context,
                                         "value": projectName
                                     },
                                     {
-                                        "title": "Test Suite Name:",
-                                        "value": testSuiteName
+                                        "title": "Test Cycle Name:",
+                                        "value": testCycleName
                                     },
                                     {
                                         "title": "Test Run Name:",
