@@ -86,7 +86,7 @@ exports.handler = async function ({ event: body, constants, triggers }, context,
         const testRunUrl = `https://${qtestDomainName}/p/${projectId}/portal/project#id=${testRunId}&object=3&tab=testexecution`;
 
         // 6. Format and send an Adaptive Card to Teams with conditional color for test status and footer hyperlink
-        const response = await axios.post(constants.TeamsWebhook, {
+        const response = await axios.post(constants.ChatOpsWebhook, {
             "type": "message",
             "attachments": [
                 {
